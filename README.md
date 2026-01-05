@@ -57,11 +57,13 @@ Available feeds are listed in `seeds/available_feeds.csv`. To use a different fe
 # View available feeds
 uv run duckdb -c "SELECT * FROM read_csv_auto('seeds/available_feeds.csv')"
 
-# Run dbt with a specific feed
+# Run dbt with specific feeds (one variable per feed type)
 uv run dbt run --vars '{
-  "feed_base64": "aHR0cHM6Ly9hcGkuNTExLm9yZy90cmFuc2l0L3ZlaGljbGVwb3NpdGlvbnM_YWdlbmN5PVND",
-  "start_date": "2026-01-01",
-  "end_date": "2026-01-07"
+  "vehicle_positions_feed": "aHR0cHM6Ly9hcGkuNTExLm9yZy90cmFuc2l0L3ZlaGljbGVwb3NpdGlvbnM_YWdlbmN5PVND",
+  "trip_updates_feed": "aHR0cHM6Ly9hcGkuNTExLm9yZy90cmFuc2l0L3RyaXB1cGRhdGVzP2FnZW5jeT1TQw",
+  "service_alerts_feed": "aHR0cHM6Ly9hcGkuNTExLm9yZy90cmFuc2l0L3NlcnZpY2VhbGVydHM_YWdlbmN5PVND",
+  "start_date": "2026-01-04",
+  "end_date": "2026-01-04"
 }'
 ```
 
