@@ -1,0 +1,36 @@
+{
+  "name": "GTFS-RT DuckDB Workshop",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  "features": {
+    "ghcr.io/astral-sh/uv:latest": {}
+  },
+
+  "postCreateCommand": "uv sync",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "[sql]": {
+          "editor.defaultFormatter": "mtxr.sqltools"
+        }
+      },
+      "extensions": [
+        "ms-python.python",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-sqlite",
+        "evidence.sqltools-duckdb-driver",
+        "innoverio.vscode-dbt-power-user",
+        "bastienboutonnet.vscode-dbt"
+      ]
+    }
+  },
+
+  "forwardPorts": [],
+
+  "remoteEnv": {
+    "DBT_PROFILES_DIR": "${containerWorkspaceFolder}"
+  }
+}
