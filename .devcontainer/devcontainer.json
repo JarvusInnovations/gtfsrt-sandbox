@@ -1,12 +1,12 @@
 {
-  "name": "GTFS-RT DuckDB Workshop",
-  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "name": "GTFS-RT Sandbox",
+	"image": "mcr.microsoft.com/devcontainers/base:jammy",
 
   "features": {
-    "ghcr.io/astral-sh/uv:latest": {}
+		"ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com:1": {}
   },
 
-  "postCreateCommand": "uv sync",
+  "postCreateCommand": "asdf install && uv sync",
 
   "customizations": {
     "vscode": {
