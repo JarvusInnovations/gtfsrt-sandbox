@@ -17,9 +17,9 @@ vars:
   # Default: SEPTA Regional Rail vehicle positions
   feed_base64: 'aHR0cHM6Ly93d3czLnNlcHRhLm9yZy9ndGZzcnQvc2VwdGEtcGEtdXMvVmVoaWNsZS9ydFZlaGljbGVQb3NpdGlvbi5wYg'
 
-  # Date range for data query
-  start_date: '2026-01-01'
-  end_date: '2026-01-07'
+  # Date range for data query (adjust to available data)
+  start_date: '2026-01-04'
+  end_date: '2026-01-04'
 
 models:
   gtfsrt_sandbox:
