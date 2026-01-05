@@ -1,0 +1,29 @@
+name: 'gtfsrt_sandbox'
+version: '1.0.0'
+config-version: 2
+
+profile: 'gtfsrt_sandbox'
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  # Feed URL encoded as base64url (no padding)
+  # Default: SEPTA Regional Rail vehicle positions
+  feed_base64: 'aHR0cHM6Ly93d3czLnNlcHRhLm9yZy9ndGZzcnQvc2VwdGEtcGEtdXMvVmVoaWNsZS9ydFZlaGljbGVQb3NpdGlvbi5wYg'
+
+  # Date range for data query
+  start_date: '2026-01-01'
+  end_date: '2026-01-07'
+
+models:
+  gtfsrt_sandbox:
+    staging:
+      +materialized: table  # Cache locally to avoid re-downloading
+    marts:
+      +materialized: view   # Views on top of cached staging tables

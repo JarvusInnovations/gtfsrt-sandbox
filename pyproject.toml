@@ -1,0 +1,11 @@
+[project]
+name = "gtfsrt-sandbox"
+version = "0.1.0"
+description = "DuckDB + dbt workshop for querying GTFS-RT parquet data"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-duckdb>=1.10.0",
+    "duckdb>=1.4.3",
+    "google-cloud-storage>=3.7.0",
+]

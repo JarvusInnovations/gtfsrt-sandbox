@@ -1,0 +1,11 @@
+gtfsrt_sandbox:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: workshop.duckdb
+      extensions:
+        - httpfs
+        - parquet
+      settings:
+        threads: 4
