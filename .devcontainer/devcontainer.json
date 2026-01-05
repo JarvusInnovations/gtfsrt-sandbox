@@ -3,7 +3,11 @@
 	"image": "mcr.microsoft.com/devcontainers/base:jammy",
 
   "features": {
-		"ghcr.io/devcontainer-community/devcontainer-features/asdf-vm.com:1": {}
+		"ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers-extra/features/uv:1": {},
+    "ghcr.io/eitsupi/devcontainer-features/duckdb-cli:1": {}
   },
 
   "postCreateCommand": "asdf install && uv sync",
