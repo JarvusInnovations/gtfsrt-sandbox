@@ -17,7 +17,6 @@ SELECT
     date AS partition_date,
 
     -- Source metadata
-    source_file,
     feed_url,
     to_timestamp(feed_timestamp) AS feed_timestamp,
     entity_id,

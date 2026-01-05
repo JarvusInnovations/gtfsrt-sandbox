@@ -25,7 +25,6 @@
 
 read_parquet(
     'gs://parquet.gtfsrt.io/{{ feed_type }}/date=*/base64url={{ feed_base64_value }}/data.parquet',
-    hive_partitioning = true,
-    filename = true
+    hive_partitioning = true
 )
 {% endmacro %}
