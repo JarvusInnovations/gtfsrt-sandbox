@@ -29,7 +29,7 @@ Three feed types are available:
 4. Query your data:
 
    ```bash
-   uv run duckdb workshop.duckdb
+   uv run duckdb workshop.duckdb -ui
    ```
 
 ### Option 2: Local Setup
@@ -46,7 +46,7 @@ uv sync
 uv run dbt run
 
 # Query the data
-uv run duckdb workshop.duckdb
+uv run duckdb workshop.duckdb -ui
 ```
 
 ## Choosing a Feed
