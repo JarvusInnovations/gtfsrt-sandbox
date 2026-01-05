@@ -1,5 +1,5 @@
 -- GTFS-RT Parquet Exploration Queries
--- Run these directly in DuckDB CLI: uv run duckdb
+-- Run these directly in DuckDB CLI: duckdb
 --
 -- These queries demonstrate how to access GTFS-RT data from the public
 -- GCS bucket using gs:// URLs with glob patterns and Hive partitioning.

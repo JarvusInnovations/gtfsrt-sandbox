@@ -29,7 +29,7 @@ Three feed types are available:
 4. Query your data:
 
    ```bash
-   uv run duckdb workshop.duckdb -ui
+   duckdb workshop.duckdb -ui
    ```
 
 ### Option 2: Local Setup
@@ -46,7 +46,7 @@ uv sync
 uv run dbt run
 
 # Query the data
-uv run duckdb workshop.duckdb -ui
+duckdb workshop.duckdb -ui
 ```
 
 ## Choosing a Feed
@@ -55,7 +55,7 @@ Available feeds are listed in `seeds/available_feeds.csv`. To use a different fe
 
 ```bash
 # View available feeds
-uv run duckdb -c "SELECT * FROM read_csv_auto('seeds/available_feeds.csv')"
+duckdb -c "SELECT * FROM read_csv_auto('seeds/available_feeds.csv')"
 
 # Run dbt with specific feeds (one variable per feed type)
 uv run dbt run --vars '{
@@ -115,7 +115,7 @@ You can query the data directly without dbt using `gs://` URLs with glob pattern
 
 ```sql
 -- Start DuckDB CLI
-uv run duckdb
+duckdb
 
 -- Load httpfs extension
 INSTALL httpfs;
@@ -176,7 +176,7 @@ uv run dbt docs generate
 uv run dbt docs serve
 
 # Query the database
-uv run duckdb workshop.duckdb
+duckdb workshop.duckdb
 ```
 
 ## Data Schema
