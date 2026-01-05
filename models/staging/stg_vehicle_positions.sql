@@ -9,9 +9,13 @@
     Downloads data from GCS on first run and caches locally.
 
     One row per vehicle position update in the feed.
+    Uses gs:// glob patterns with Hive partitioning for efficient access.
 */
 
 SELECT
+    -- Partition key (from Hive partitioning)
+    date AS partition_date,
+
     -- Source metadata
     source_file,
     feed_url,
@@ -48,3 +52,4 @@ SELECT
     occupancy_percentage
 
 FROM {{ read_gtfs_parquet('vehicle_positions') }}
+WHERE date >= '{{ var("start_date") }}' AND date <= '{{ var("end_date") }}'

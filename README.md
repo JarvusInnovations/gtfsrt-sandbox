@@ -6,7 +6,7 @@ Query real-time transit data using DuckDB and dbt.
 
 This workshop demonstrates how to query GTFS Realtime parquet data from a public GCS bucket using DuckDB's httpfs extension and dbt for data transformation.
 
-**Data source**: <http://parquet.gtfsrt.io/>
+**Data source**: `gs://parquet.gtfsrt.io/` (also available at <http://parquet.gtfsrt.io/>)
 
 Three feed types are available:
 
@@ -111,7 +111,7 @@ To refresh data: `uv run dbt run --full-refresh`
 
 ## Direct DuckDB Queries
 
-You can query the data directly without dbt:
+You can query the data directly without dbt using `gs://` URLs with glob patterns:
 
 ```sql
 -- Start DuckDB CLI
@@ -121,13 +121,24 @@ uv run duckdb
 INSTALL httpfs;
 LOAD httpfs;
 
--- Query a single parquet file
-SELECT *
+-- Query with glob pattern (all dates for a feed)
+SELECT date, COUNT(*) as records
 FROM read_parquet(
-    'http://parquet.gtfsrt.io/vehicle_positions/date=2026-01-01/base64url=aHR0cHM6Ly93d3czLnNlcHRhLm9yZy9ndGZzcnQvc2VwdGEtcGEtdXMvVmVoaWNsZS9ydFZlaGljbGVQb3NpdGlvbi5wYg/data.parquet'
+    'gs://parquet.gtfsrt.io/vehicle_positions/date=*/base64url=aHR0cHM6Ly93d3czLnNlcHRhLm9yZy9ndGZzcnQvc2VwdGEtcGEtdXMvVmVoaWNsZS9ydFZlaGljbGVQb3NpdGlvbi5wYg/data.parquet',
+    hive_partitioning=true
 )
-LIMIT 10;
+GROUP BY date;
+
+-- Query all feeds for a date
+SELECT base64url, COUNT(*) as records
+FROM read_parquet(
+    'gs://parquet.gtfsrt.io/vehicle_positions/date=2026-01-04/base64url=*/data.parquet',
+    hive_partitioning=true
+)
+GROUP BY base64url;
 ```
+
+**Key advantage**: `gs://` URLs support glob patterns (`*`) for directory listing, while `http://` URLs do not.
 
 See `scripts/explore_feeds.sql` for more examples.
 
@@ -174,6 +185,7 @@ uv run duckdb workshop.duckdb
 
 | Column | Type | Description |
 |--------|------|-------------|
+| partition_date | date | Date partition (from Hive partitioning) |
 | feed_timestamp | timestamp | When the feed was fetched |
 | vehicle_id | string | Vehicle identifier |
 | trip_id | string | Trip identifier |
@@ -186,6 +198,7 @@ uv run duckdb workshop.duckdb
 
 | Column | Type | Description |
 |--------|------|-------------|
+| partition_date | date | Date partition (from Hive partitioning) |
 | feed_timestamp | timestamp | When the feed was fetched |
 | trip_id | string | Trip identifier |
 | stop_id | string | Stop identifier |
@@ -196,6 +209,7 @@ uv run duckdb workshop.duckdb
 
 | Column | Type | Description |
 |--------|------|-------------|
+| partition_date | date | Date partition (from Hive partitioning) |
 | feed_timestamp | timestamp | When the feed was fetched |
 | header_text | string | Alert title |
 | description_text | string | Alert details |

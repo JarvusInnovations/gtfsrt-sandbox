@@ -9,9 +9,13 @@
     Downloads data from GCS on first run and caches locally.
 
     Denormalized: one row per stop_time_update within each trip update.
+    Uses gs:// glob patterns with Hive partitioning for efficient access.
 */
 
 SELECT
+    -- Partition key (from Hive partitioning)
+    date AS partition_date,
+
     -- Source metadata
     source_file,
     feed_url,
@@ -46,3 +50,4 @@ SELECT
     stop_schedule_relationship
 
 FROM {{ read_gtfs_parquet('trip_updates') }}
+WHERE date >= '{{ var("start_date") }}' AND date <= '{{ var("end_date") }}'

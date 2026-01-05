@@ -9,9 +9,13 @@
     Downloads data from GCS on first run and caches locally.
 
     Denormalized: one row per informed_entity within each alert.
+    Uses gs:// glob patterns with Hive partitioning for efficient access.
 */
 
 SELECT
+    -- Partition key (from Hive partitioning)
+    date AS partition_date,
+
     -- Source metadata
     source_file,
     feed_url,
@@ -42,3 +46,4 @@ SELECT
     trip_direction_id
 
 FROM {{ read_gtfs_parquet('service_alerts') }}
+WHERE date >= '{{ var("start_date") }}' AND date <= '{{ var("end_date") }}'
