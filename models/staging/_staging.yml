@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: stg_vehicle_positions
+    description: >
+      Staging model for GTFS-RT vehicle positions. Each row represents a
+      vehicle position update from the feed. Data is downloaded from GCS
+      on first run and cached locally as a DuckDB table.
+    columns:
+      - name: feed_url
+        description: Original feed URL
+      - name: feed_timestamp
+        description: Timestamp when the feed was fetched
+      - name: entity_id
+        description: Unique identifier for this entity in the feed
+      - name: vehicle_id
+        description: Transit agency's vehicle identifier
+      - name: trip_id
+        description: Trip identifier from GTFS static
+      - name: route_id
+        description: Route identifier from GTFS static
+      - name: latitude
+        description: Vehicle latitude (WGS84)
+      - name: longitude
+        description: Vehicle longitude (WGS84)
+      - name: speed
+        description: Vehicle speed in meters per second
+
+  - name: stg_trip_updates
+    description: >
+      Staging model for GTFS-RT trip updates. Denormalized with one row
+      per stop_time_update within each trip update entity. Data is
+      downloaded from GCS on first run and cached locally.
+    columns:
+      - name: feed_url
+        description: Original feed URL
+      - name: feed_timestamp
+        description: Timestamp when the feed was fetched
+      - name: entity_id
+        description: Unique identifier for this entity in the feed
+      - name: trip_id
+        description: Trip identifier from GTFS static
+      - name: stop_id
+        description: Stop identifier from GTFS static
+      - name: arrival_delay
+        description: Delay in seconds (positive = late, negative = early)
+      - name: departure_delay
+        description: Delay in seconds (positive = late, negative = early)
+
+  - name: stg_service_alerts
+    description: >
+      Staging model for GTFS-RT service alerts. Denormalized with one row
+      per informed_entity within each alert. Data is downloaded from GCS
+      on first run and cached locally.
+    columns:
+      - name: feed_url
+        description: Original feed URL
+      - name: feed_timestamp
+        description: Timestamp when the feed was fetched
+      - name: entity_id
+        description: Unique identifier for this entity in the feed
+      - name: header_text
+        description: Alert header/title text
+      - name: description_text
+        description: Alert description text
+      - name: cause
+        description: Alert cause code
+      - name: effect
+        description: Alert effect code
