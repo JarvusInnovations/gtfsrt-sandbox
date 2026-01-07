@@ -50,5 +50,5 @@ SELECT
     occupancy_status,
     occupancy_percentage
 
-FROM {{ read_gtfs_parquet('vehicle_positions') }}
-WHERE date >= '{{ var("start_date") }}' AND date <= '{{ var("end_date") }}'
+FROM {{ ref('base_vehicle_positions') }}
+
