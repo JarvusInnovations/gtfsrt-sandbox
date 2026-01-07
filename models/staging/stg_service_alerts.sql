@@ -44,5 +44,4 @@ SELECT
     trip_route_id,
     trip_direction_id
 
-FROM {{ read_gtfs_parquet('service_alerts') }}
-WHERE date >= '{{ var("start_date") }}' AND date <= '{{ var("end_date") }}'
+FROM {{ ref('base_service_alerts') }}

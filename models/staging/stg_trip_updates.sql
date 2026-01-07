@@ -48,5 +48,4 @@ SELECT
     departure_uncertainty,
     stop_schedule_relationship
 
-FROM {{ read_gtfs_parquet('trip_updates') }}
-WHERE date >= '{{ var("start_date") }}' AND date <= '{{ var("end_date") }}'
+FROM {{ ref('base_trip_updates') }}

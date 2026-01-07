@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: base_service_alerts
+    description: &desc >
+      Materialize data from parquet files in the DuckDB database. 
+      To load new or different data, update the start and end date variables in dbt_project.yml 
+      and then do a dbt run with the --full-refresh flag set. 
+  - name: base_vehicle_positions
+    description: *desc 
+  - name: base_trip_updates
+    description: *desc 
