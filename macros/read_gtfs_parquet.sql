@@ -24,7 +24,6 @@
 {% set feed_base64_value = feed_base64 if feed_base64 else var(feed_type ~ '_feed') %}
 
 read_parquet(
-    -- 'gs://parquet.gtfsrt.io/{{ feed_type }}/date=*/base64url={{ feed_base64_value }}/data.parquet',
     '{{ var("parquet_prefix") }}/{{ feed_type }}/date=*/base64url={{ feed_base64_value }}/data.parquet',
     hive_partitioning = true
 )
