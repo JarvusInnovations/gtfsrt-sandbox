@@ -1,0 +1,89 @@
+version: 2
+
+models:
+  - name: int_tides_vehicle_locations
+    description: >
+      Transforms GTFS-RT vehicle position data into TIDES (Transit ITS Data Exchange Specification) 
+      vehicle_locations format. This intermediate model bridges the gap between raw real-time feeds 
+      and the standardized TIDES schema for vehicle location events.
+      
+      Reference implementation: https://github.com/evansiroky/gtfs-rt-to-tides/blob/main/parse_vehicle_positions_for_day.py
+      
+      TIDES Schema: https://tides.trilliumtransit.com/
+      
+      **Current Limitations:**
+      - Several fields require GTFS schedule data that is not yet integrated
+      - Some fields require supplemental data sources or data science analysis
+      - Primary key generation does not guarantee uniqueness across all records
+    columns:
+      - name: location_ping_id
+        description: '{{ doc("tides_location_ping_id") }}'
+        tests:
+          - not_null
+      
+      - name: service_date
+        description: '{{ doc("tides_service_date") }}'
+      
+      - name: event_timestamp
+        description: '{{ doc("tides_event_timestamp") }}'
+        tests:
+          - not_null
+      
+      - name: trip_id_performed
+        description: '{{ doc("tides_trip_id_performed") }}'
+      
+      - name: trip_id_scheduled
+        description: '{{ doc("tides_trip_id_scheduled") }}'
+      
+      - name: trip_stop_sequence
+        description: '{{ doc("tides_trip_stop_sequence") }}'
+      
+      - name: scheduled_stop_sequence
+        description: '{{ doc("tides_scheduled_stop_sequence") }}'
+      
+      - name: vehicle_id
+        description: '{{ doc("tides_vehicle_id") }}'
+        tests:
+          - not_null
+      
+      - name: device_id
+        description: '{{ doc("tides_device_id") }}'
+      
+      - name: pattern_id
+        description: '{{ doc("tides_pattern_id") }}'
+      
+      - name: stop_id
+        description: '{{ doc("tides_stop_id") }}'
+      
+      - name: current_status
+        description: '{{ doc("tides_current_status") }}'
+      
+      - name: latitude
+        description: '{{ doc("tides_latitude") }}'
+      
+      - name: longitude
+        description: '{{ doc("tides_longitude") }}'
+      
+      - name: gps_quality
+        description: '{{ doc("tides_gps_quality") }}'
+      
+      - name: heading
+        description: '{{ doc("tides_heading") }}'
+      
+      - name: speed
+        description: '{{ doc("tides_speed") }}'
+      
+      - name: odometer
+        description: '{{ doc("tides_odometer") }}'
+      
+      - name: schedule_deviation
+        description: '{{ doc("tides_schedule_deviation") }}'
+      
+      - name: headway_deviation
+        description: '{{ doc("tides_headway_deviation") }}'
+      
+      - name: trip_type
+        description: '{{ doc("tides_trip_type") }}'
+      
+      - name: schedule_relationship
+        description: '{{ doc("tides_schedule_relationship") }}'
