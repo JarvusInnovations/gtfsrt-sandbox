@@ -25,6 +25,9 @@ models:
         description: Vehicle longitude (WGS84)
       - name: speed
         description: Vehicle speed in meters per second
+      - &_uuid
+        name: _uuid
+        description: '{{ doc("uuid") }}'
 
   - name: stg_trip_updates
     description: >
@@ -46,6 +49,7 @@ models:
         description: Delay in seconds (positive = late, negative = early)
       - name: departure_delay
         description: Delay in seconds (positive = late, negative = early)
+      - *_uuid
 
   - name: stg_service_alerts
     description: >
@@ -67,3 +71,4 @@ models:
         description: Alert cause code
       - name: effect
         description: Alert effect code
+      - *_uuid

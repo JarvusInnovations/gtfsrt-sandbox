@@ -8,8 +8,7 @@ with stg as (
 
 int_tides_vehicle_locations as (
     select
-        -- this is not guaranteed to be unique
-        {{ dbt_utils.generate_surrogate_key(['feed_timestamp', 'vehicle_timestamp', 'vehicle_id']) }} as location_ping_id,
+        _uuid as location_ping_id,
         -- TODO: we would need GTFS schedule or a manual specification to do a feed time zone lookup here
         -- for now, just use Eastern Time and hope for the best
         timezone(
