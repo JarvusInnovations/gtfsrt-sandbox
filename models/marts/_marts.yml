@@ -1,0 +1,138 @@
+version: 2
+
+models:
+  - name: fct_tides_vehicle_locations
+    description: >
+      TIDES vehicle locations fact table.
+    columns:
+      - &location_ping_id
+        name: location_ping_id
+        description: '{{ doc("tides_location_ping_id") }}'
+        data_tests:
+          - unique
+      
+      - &service_date
+        name: service_date
+        description: '{{ doc("tides_service_date") }}'
+      
+      - &event_timestamp
+        name: event_timestamp
+        description: '{{ doc("tides_event_timestamp") }}'
+      
+      - &trip_id_performed
+        name: trip_id_performed
+        description: '{{ doc("tides_trip_id_performed") }}'
+      
+      - &trip_id_scheduled
+        name: trip_id_scheduled
+        description: '{{ doc("tides_trip_id_scheduled") }}'
+      
+      - &trip_stop_sequence
+        name: trip_stop_sequence
+        description: '{{ doc("tides_trip_stop_sequence") }}'
+      
+      - &scheduled_stop_sequence
+        name: scheduled_stop_sequence
+        description: '{{ doc("tides_scheduled_stop_sequence") }}'
+      
+      - &vehicle_id
+        name: vehicle_id
+        description: '{{ doc("tides_vehicle_id") }}'
+      
+      - &device_id
+        name: device_id
+        description: '{{ doc("tides_device_id") }}'
+      
+      - &pattern_id
+        name: pattern_id
+        description: '{{ doc("tides_pattern_id") }}'
+      
+      - &stop_id
+        name: stop_id
+        description: '{{ doc("tides_stop_id") }}'
+      
+      - &current_status
+        name: current_status
+        description: '{{ doc("tides_current_status") }}'
+      
+      - &latitude
+        name: latitude
+        description: '{{ doc("tides_latitude") }}'
+      
+      - &longitude
+        name: longitude
+        description: '{{ doc("tides_longitude") }}'
+      
+      - &gps_quality
+        name: gps_quality
+        description: '{{ doc("tides_gps_quality") }}'
+      
+      - &heading
+        name: heading
+        description: '{{ doc("tides_heading") }}'
+      
+      - &speed
+        name: speed
+        description: '{{ doc("tides_speed") }}'
+      
+      - &odometer
+        name: odometer
+        description: '{{ doc("tides_odometer") }}'
+      
+      - &schedule_deviation
+        name: schedule_deviation
+        description: '{{ doc("tides_schedule_deviation") }}'
+      
+      - &headway_deviation
+        name: headway_deviation
+        description: '{{ doc("tides_headway_deviation") }}'
+      
+      - &trip_type
+        name: trip_type
+        description: '{{ doc("tides_trip_type") }}'
+      
+      - &schedule_relationship
+        name: schedule_relationship
+        description: '{{ doc("tides_schedule_relationship") }}'
+
+  - name: fct_tides_vehicle_locations_quality
+    description: >
+      TIDES vehicle locations with quality indicators.
+    columns:
+      - *location_ping_id
+      - *service_date
+      - *event_timestamp
+      - *trip_id_performed
+      - *trip_id_scheduled
+      - *trip_stop_sequence
+      - *scheduled_stop_sequence
+      - *vehicle_id
+      - *device_id
+      - *pattern_id
+      - *stop_id
+      - *current_status
+      - *latitude
+      - *longitude
+      - *gps_quality
+      - *heading
+      - *speed
+      - *odometer
+      - *schedule_deviation
+      - *headway_deviation
+      - *trip_type
+      - *schedule_relationship
+      
+      - name: is_valid
+        description: >
+          Indicator for whether this row should be kept in the final mart TIDES model.
+          Based on the outcome of all cumulative row-level quality checks. 
+
+      - name: is_first_instance
+        description: >
+          Indicator for whether this row is the first instance for its 
+          event_timestamp + vehicle_id combination when sorted by location_ping_id. 
+          First instance is kept in the validity filter.
+      
+      - name: has_dups
+        description: >
+          Indicator for whether there was more than one instance of this event_timestamp + vehicle_id combination.

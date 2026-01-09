@@ -46,6 +46,9 @@ SELECT
     departure_delay,
     to_timestamp(departure_time) AS departure_time,
     departure_uncertainty,
-    stop_schedule_relationship
+    stop_schedule_relationship,
+
+    -- generated ID
+    _uuid
 
 FROM {{ ref('base_trip_updates') }}

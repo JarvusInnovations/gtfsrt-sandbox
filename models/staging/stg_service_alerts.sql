@@ -42,6 +42,8 @@ SELECT
     stop_id,
     trip_id,
     trip_route_id,
-    trip_direction_id
+    trip_direction_id,
 
+    -- generated ID
+    _uuid
 FROM {{ ref('base_service_alerts') }}

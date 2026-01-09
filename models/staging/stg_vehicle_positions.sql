@@ -48,7 +48,10 @@ SELECT
     to_timestamp(timestamp) AS vehicle_timestamp,
     congestion_level,
     occupancy_status,
-    occupancy_percentage
+    occupancy_percentage,
+
+    -- generated ID
+    _uuid
 
 FROM {{ ref('base_vehicle_positions') }}
 
