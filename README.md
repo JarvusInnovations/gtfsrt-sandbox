@@ -36,11 +36,12 @@ Three feed types are available:
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/gtfsrt-sandbox.git
+git clone https://github.com/JarvusInnovations/gtfsrt-sandbox.git
 cd gtfsrt-sandbox
 
 # Install dependencies (requires uv: https://docs.astral.sh/uv/)
 uv sync
+uv run dbt deps
 
 # Run dbt to download and transform data
 uv run dbt run
@@ -215,6 +216,10 @@ duckdb workshop.duckdb
 | description_text | string | Alert details |
 | cause | int | Cause code |
 | effect | int | Effect code |
+
+## Need Help?
+
+See [docs/troubleshooting.md](docs/troubleshooting.md) for common issues and solutions.
 
 ## License
 
