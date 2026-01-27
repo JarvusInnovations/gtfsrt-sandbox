@@ -30,6 +30,10 @@ vars:
 models:
   gtfsrt_sandbox:
     staging:
-      +materialized: table  # Cache locally to avoid re-downloading
+      +materialized: view
+      base:
+        +materialized: incremental
+    intermediate:
+      +materialized: view
     marts:
-      +materialized: view   # Views on top of cached staging tables
+      +materialized: view

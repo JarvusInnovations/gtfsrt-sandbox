@@ -1,9 +1,3 @@
-{{
-  config(
-    materialized='incremental'
-  )
-}}
-
 SELECT 
   *,
   uuid() as _uuid

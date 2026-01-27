@@ -1,9 +1,3 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
-
 /*
     Daily summary statistics for vehicle position data.
     Shows feed activity and coverage per day.
