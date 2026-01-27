@@ -7,6 +7,7 @@ profile: 'gtfsrt_sandbox'
 model-paths: ["models"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
+docs-paths: ["docs"]
 target-path: "target"
 clean-targets:
   - "target"

@@ -11,7 +11,7 @@
     "ghcr.io/eitsupi/devcontainer-features/duckdb-cli:1": {}
   },
 
-  "postCreateCommand": "uv sync",
+  "postCreateCommand": "uv sync && uv run dbt deps",
 
   "customizations": {
     "vscode": {

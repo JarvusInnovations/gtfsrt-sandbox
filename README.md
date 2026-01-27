@@ -34,13 +34,19 @@ Three feed types are available:
 
 ### Option 2: Local Setup
 
+**Prerequisites:**
+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) - Python package manager
+- [DuckDB CLI](https://duckdb.org/docs/installation/) - for interactive queries
+
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/gtfsrt-sandbox.git
+git clone https://github.com/JarvusInnovations/gtfsrt-sandbox.git
 cd gtfsrt-sandbox
 
-# Install dependencies (requires uv: https://docs.astral.sh/uv/)
+# Install Python dependencies
 uv sync
+uv run dbt deps
 
 # Run dbt to download and transform data
 uv run dbt run
@@ -48,6 +54,8 @@ uv run dbt run
 # Query the data
 duckdb workshop.duckdb -ui
 ```
+
+> **Note:** If you get a "Failed to download extension" error with `-ui`, see [DuckDB UI Extension Error](docs/troubleshooting.md#duckdb-ui-extension-error).
 
 ## Choosing a Feed
 
@@ -215,6 +223,10 @@ duckdb workshop.duckdb
 | description_text | string | Alert details |
 | cause | int | Cause code |
 | effect | int | Effect code |
+
+## Need Help?
+
+See [docs/troubleshooting.md](docs/troubleshooting.md) for common issues and solutions.
 
 ## License
 
