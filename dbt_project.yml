@@ -14,17 +14,17 @@ clean-targets:
 
 vars:
   # Feed URLs encoded as base64url (no padding)
-  # Default: SEPTA feeds (each feed type needs its own URL)
-  vehicle_positions_feed: 'aHR0cHM6Ly93d3czLnNlcHRhLm9yZy9ndGZzcnQvc2VwdGEtcGEtdXMvVmVoaWNsZS9ydFZlaGljbGVQb3NpdGlvbi5wYg'
-  trip_updates_feed: 'aHR0cHM6Ly93d3czLnNlcHRhLm9yZy9ndGZzcnQvc2VwdGEtcGEtdXMvVHJpcC9ydFRyaXBVcGRhdGVzLnBi'
-  service_alerts_feed: 'aHR0cHM6Ly93d3czLnNlcHRhLm9yZy9ndGZzcnQvc2VwdGEtcGEtdXMvU2VydmljZS9ydFNlcnZpY2VBbGVydHMucGI'
+  # Default: AC Transit feeds (smaller, reliable, 106 routes)
+  vehicle_positions_feed: 'aHR0cHM6Ly9hcGkuYWN0cmFuc2l0Lm9yZy90cmFuc2l0L2d0ZnNydC92ZWhpY2xlcw'
+  trip_updates_feed: 'aHR0cHM6Ly9hcGkuYWN0cmFuc2l0Lm9yZy90cmFuc2l0L2d0ZnNydC90cmlwdXBkYXRlcw'
+  service_alerts_feed: 'aHR0cHM6Ly9hcGkuYWN0cmFuc2l0Lm9yZy90cmFuc2l0L2d0ZnNydC9hbGVydHM'
   # directory prefix for where DuckDB should look for raw parquet files
-  # if it starts with gs://, will look to GCS 
+  # if it starts with gs://, will look to GCS
   parquet_prefix: 'gs://parquet.gtfsrt.io'
 
   # Date range for data query (adjust to available data)
-  start_date: '2026-01-04'
-  end_date: '2026-01-04'
+  start_date: '2026-01-24'
+  end_date: '2026-01-24'
 
 models:
   gtfsrt_sandbox:
