@@ -34,12 +34,17 @@ Three feed types are available:
 
 ### Option 2: Local Setup
 
+**Prerequisites:**
+
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) - Python package manager
+- [DuckDB CLI](https://duckdb.org/docs/installation/) - for interactive queries
+
 ```bash
 # Clone the repo
 git clone https://github.com/JarvusInnovations/gtfsrt-sandbox.git
 cd gtfsrt-sandbox
 
-# Install dependencies (requires uv: https://docs.astral.sh/uv/)
+# Install Python dependencies
 uv sync
 uv run dbt deps
 

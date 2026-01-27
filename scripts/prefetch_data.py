@@ -94,6 +94,8 @@ def download_feed_data(
 
 
 def main():
+    global LOCAL_DATA_DIR
+
     parser = argparse.ArgumentParser(
         description="Pre-download GTFS-RT parquet data for offline use",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -155,7 +157,6 @@ Examples:
     else:
         feed_base64 = args.feed_base64
 
-    global LOCAL_DATA_DIR
     LOCAL_DATA_DIR = args.output_dir
 
     print(f"\nDownloading {args.feed_type} data:")

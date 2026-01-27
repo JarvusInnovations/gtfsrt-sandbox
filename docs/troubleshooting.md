@@ -47,6 +47,7 @@ Try these steps:
 
    ```bash
    uv run dbt clean
+   uv run dbt deps
    uv run dbt run
    ```
 
