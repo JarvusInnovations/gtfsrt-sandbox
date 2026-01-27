@@ -55,6 +55,8 @@ uv run dbt run
 duckdb workshop.duckdb -ui
 ```
 
+> **Note:** If you get a "Failed to download extension" error with `-ui`, see [DuckDB UI Extension Error](docs/troubleshooting.md#duckdb-ui-extension-error).
+
 ## Choosing a Feed
 
 Available feeds are listed in `seeds/available_feeds.csv`. To use a different feed:

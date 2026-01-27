@@ -59,6 +59,30 @@ Try these steps:
    uv sync
    ```
 
+## DuckDB UI Extension Error
+
+**Symptom:** `duckdb -ui` fails with "Failed to download extension" error
+
+```
+Extension Autoloading Error:
+Failed to download extension "ui" at URL "http://extensions.duckdb.org/..." (HTTP 404)
+```
+
+This is a [known issue](https://github.com/duckdb/duckdb/issues/19019) with DuckDB's UI extension. To fix it, install from the nightly build:
+
+```bash
+# Start DuckDB REPL
+duckdb
+
+# Install UI extension from nightly
+INSTALL ui FROM core_nightly;
+
+# Exit
+.quit
+```
+
+Now `duckdb workshop.duckdb -ui` should work.
+
 ## Getting Help
 
 If you're still stuck, [open an issue](https://github.com/JarvusInnovations/gtfsrt-sandbox/issues) with:
