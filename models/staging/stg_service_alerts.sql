@@ -1,9 +1,3 @@
-{{
-  config(
-    materialized='table'
-  )
-}}
-
 /*
     Staging model for GTFS-RT service alerts.
     Downloads data from GCS on first run and caches locally.

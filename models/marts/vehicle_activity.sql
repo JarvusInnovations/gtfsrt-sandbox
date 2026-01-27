@@ -1,9 +1,3 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
-
 /*
     Hourly vehicle activity analysis.
     Shows vehicle movement patterns and coverage over time.
