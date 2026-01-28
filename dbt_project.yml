@@ -7,32 +7,16 @@ profile: 'gtfsrt_sandbox'
 model-paths: ["models"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
-docs-paths: ["docs"]
+docs-paths: ["docs/data"]
 target-path: "target"
 clean-targets:
   - "target"
   - "dbt_packages"
 
-vars:
-  # Feed URLs encoded as base64url (no padding)
-  # Default: AC Transit feeds (smaller, reliable, 106 routes)
-  vehicle_positions_feed: 'aHR0cHM6Ly9hcGkuYWN0cmFuc2l0Lm9yZy90cmFuc2l0L2d0ZnNydC92ZWhpY2xlcw'
-  trip_updates_feed: 'aHR0cHM6Ly9hcGkuYWN0cmFuc2l0Lm9yZy90cmFuc2l0L2d0ZnNydC90cmlwdXBkYXRlcw'
-  service_alerts_feed: 'aHR0cHM6Ly9hcGkuYWN0cmFuc2l0Lm9yZy90cmFuc2l0L2d0ZnNydC9hbGVydHM'
-  # directory prefix for where DuckDB should look for raw parquet files
-  # if it starts with gs://, will look to GCS
-  parquet_prefix: 'gs://parquet.gtfsrt.io'
-
-  # Date range for data query (adjust to available data)
-  start_date: '2026-01-24'
-  end_date: '2026-01-24'
-
 models:
   gtfsrt_sandbox:
     staging:
       +materialized: view
-      base:
-        +materialized: incremental
     intermediate:
       +materialized: view
     marts:

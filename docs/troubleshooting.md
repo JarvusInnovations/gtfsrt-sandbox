@@ -81,7 +81,7 @@ INSTALL ui FROM core_nightly;
 .quit
 ```
 
-Now `duckdb workshop.duckdb -ui` should work.
+Now `duckdb sandbox.duckdb -ui` should work.
 
 ## Getting Help
 
