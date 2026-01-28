@@ -6,5 +6,6 @@ gtfsrt_sandbox:
       path: sandbox.duckdb
       extensions:
         - parquet
+        - httpfs
       settings:
         threads: 4
