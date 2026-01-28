@@ -1,6 +1,8 @@
-# GTFS-RT DuckDB Workshop
+# GTFS-RT Sandbox
 
-Query real-time transit data using DuckDB and dbt.
+A sandbox environment for exploring transit operational data transformation patterns using DuckDB and dbt. Part of the **Common Transit Operations Data Framework**, this demo shows how raw operational data can be transformed into [TIDES](https://tides-transit.org/)-compliant analytics tables using architectural patterns that scale from a laptop to enterprise cloud infrastructure.
+
+This sandbox uses publicly available GTFS-RT feeds as source data. In production, you would typically use raw AVL system exports which contain richer data, but GTFS-RT provides an accessible starting point for learning the patterns.
 
 ## Quick Start
 
@@ -17,7 +19,7 @@ Query real-time transit data using DuckDB and dbt.
 4. Query your data:
 
    ```bash
-   duckdb workshop.duckdb -ui
+   duckdb sandbox.duckdb -ui
    ```
 
 ### Option 2: Local Setup
@@ -42,14 +44,14 @@ uv run python scripts/download_data.py --defaults
 uv run dbt run
 
 # Query the data
-duckdb workshop.duckdb -ui
+duckdb sandbox.duckdb -ui
 ```
 
 > **Note:** If you get a "Failed to download extension" error with `-ui`, see [DuckDB UI Extension Error](docs/troubleshooting.md#duckdb-ui-extension-error).
 
 ## How It Works
 
-This workshop uses a two-phase approach:
+This sandbox uses a two-phase approach:
 
 1. **Download data** (`download_data.py`) - fetches parquet files to `data/`
 2. **Transform data** (`dbt run`) - creates views in DuckDB reading from local files
@@ -113,7 +115,7 @@ uv run dbt run --select stg_vehicle_positions
 uv run dbt docs generate && uv run dbt docs serve
 
 # Query the database
-duckdb workshop.duckdb -ui
+duckdb sandbox.duckdb -ui
 ```
 
 ## Data Schema
@@ -158,8 +160,8 @@ duckdb workshop.duckdb -ui
 
 ## Need Help?
 
-See [docs/troubleshooting.md](docs/troubleshooting.md) for common issues and solutions.
+See [docs/troubleshooting.md](docs/troubleshooting.md) for common issues and solutions, or [open an issue](https://github.com/JarvusInnovations/gtfsrt-sandbox/issues) if you're stuck.
 
 ## License
 
-Data sourced from public GTFS-RT feeds. Workshop materials are MIT licensed.
+Data sourced from public GTFS-RT feeds. Sandbox materials are MIT licensed.

@@ -1,7 +1,7 @@
 [project]
 name = "gtfsrt-sandbox"
 version = "0.1.0"
-description = "DuckDB + dbt workshop for querying GTFS-RT parquet data"
+description = "DuckDB + dbt sandbox for exploring GTFS-RT data transformation patterns"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

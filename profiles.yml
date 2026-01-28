@@ -3,7 +3,7 @@ gtfsrt_sandbox:
   outputs:
     dev:
       type: duckdb
-      path: workshop.duckdb
+      path: sandbox.duckdb
       extensions:
         - parquet
       settings:

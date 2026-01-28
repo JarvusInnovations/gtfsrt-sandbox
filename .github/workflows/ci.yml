@@ -68,8 +68,8 @@ jobs:
 
       - name: Verify database was created
         run: |
-          if [ ! -f workshop.duckdb ]; then
-            echo "Error: workshop.duckdb was not created"
+          if [ ! -f sandbox.duckdb ]; then
+            echo "Error: sandbox.duckdb was not created"
             exit 1
           fi
-          echo "workshop.duckdb exists ($(stat -c%s workshop.duckdb) bytes)"
+          echo "sandbox.duckdb exists ($(stat -c%s sandbox.duckdb) bytes)"

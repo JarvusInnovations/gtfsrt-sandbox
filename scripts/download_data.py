@@ -225,7 +225,7 @@ def print_summary(results: dict[str, tuple[int, int]], output_dir: Path) -> None
         print(f"\nData saved to: {output_dir}/")
         print("\nNext steps:")
         print("  uv run dbt run              # Transform the data")
-        print("  duckdb workshop.duckdb -ui  # Query the results")
+        print("  duckdb sandbox.duckdb -ui  # Query the results")
 
 
 def main():
