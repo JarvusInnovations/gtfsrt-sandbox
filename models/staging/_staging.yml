@@ -90,3 +90,32 @@ models:
       - name: effect
         description: Alert effect code
       - *_uuid
+
+  - name: stg_available_feeds
+    description: >
+      Feed inventory from parquet.gtfsrt.io. Lists all available GTFS-RT
+      feeds with metadata including agency info, feed type, date range,
+      and size statistics. Reads directly from remote JSON.
+    columns:
+      - name: feed_url
+        description: Original GTFS-RT feed URL
+      - name: feed_base64
+        description: Base64url-encoded feed URL (used in parquet file paths)
+      - name: agency_id
+        description: Transit agency identifier (e.g., "septa", "actransit")
+      - name: agency_name
+        description: Transit agency display name
+      - name: feed_type
+        description: Feed type - service_alerts, trip_updates, or vehicle_positions
+      - name: date_min
+        description: Earliest date with data available
+      - name: date_max
+        description: Latest date with data available
+      - name: total_records
+        description: Total number of records across all dates
+      - name: total_bytes
+        description: Total size of all parquet files in bytes
+      - name: days_available
+        description: Number of days with data (computed)
+      - name: avg_bytes_per_day
+        description: Average bytes per day (computed)
