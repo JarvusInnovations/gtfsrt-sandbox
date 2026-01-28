@@ -71,15 +71,23 @@ gtfsrt-sandbox/
 │   │   └── stg_service_alerts.sql
 │   ├── intermediate/            # Transformations
 │   └── marts/                   # Analytics views
-├── macros/
-│   └── read_gtfs_parquet.sql    # Macro for reading local parquet
-├── scripts/
-│   └── download_data.py         # Data download script
-└── seeds/
-    └── available_feeds.csv      # List of available feeds
+└── scripts/
+    └── download_data.py         # Data download script
 ```
 
 ## Downloading Different Data
+
+### See what's available
+
+```bash
+uv run python scripts/download_data.py --list
+```
+
+### Download a different agency
+
+```bash
+uv run python scripts/download_data.py --agency septa --date 2026-01-20
+```
 
 ### Use a different date
 
@@ -87,21 +95,7 @@ gtfsrt-sandbox/
 uv run python scripts/download_data.py --defaults --date 2026-01-20
 ```
 
-### Use a different agency
-
-```bash
-# View available feeds
-duckdb -c "SELECT * FROM read_csv_auto('seeds/available_feeds.csv')"
-
-# Download SEPTA data
-uv run python scripts/download_data.py \
-    --feed-type vehicle_positions \
-    --feed-url "https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb" \
-    --start-date 2026-01-20 \
-    --end-date 2026-01-24
-```
-
-See [docs/downloading_data.md](docs/downloading_data.md) for more examples.
+See [docs/downloading_data.md](docs/downloading_data.md) for advanced options.
 
 ## Useful Commands
 
@@ -114,9 +108,6 @@ uv run dbt run
 
 # Run specific model
 uv run dbt run --select stg_vehicle_positions
-
-# Load seed data
-uv run dbt seed
 
 # Generate and view docs
 uv run dbt docs generate && uv run dbt docs serve

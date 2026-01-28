@@ -34,6 +34,30 @@ data/
 
 The dbt models read all data from this directory, so you can download multiple feeds and dates.
 
+## List Available Agencies
+
+See what data is available:
+
+```bash
+uv run python scripts/download_data.py --list
+```
+
+This shows all agencies with their feed counts and available date ranges.
+
+## Download by Agency
+
+Download all feeds for a specific agency:
+
+```bash
+# Download SEPTA data
+uv run python scripts/download_data.py --agency septa --date 2026-01-20
+
+# Download AC Transit (same as --defaults)
+uv run python scripts/download_data.py --agency actransit
+```
+
+The script shows estimated download sizes before downloading.
+
 ## Usage Examples
 
 ### Download defaults for a specific date
@@ -42,7 +66,7 @@ The dbt models read all data from this directory, so you can download multiple f
 uv run python scripts/download_data.py --defaults --date 2026-01-20
 ```
 
-### Download a specific feed type
+### Download a specific feed type (advanced)
 
 ```bash
 uv run python scripts/download_data.py \
@@ -52,9 +76,7 @@ uv run python scripts/download_data.py \
     --end-date 2026-01-24
 ```
 
-### Download using base64-encoded feed URL
-
-If you have a base64url from `seeds/available_feeds.csv`:
+### Download using base64-encoded feed URL (advanced)
 
 ```bash
 uv run python scripts/download_data.py \
@@ -64,48 +86,20 @@ uv run python scripts/download_data.py \
     --end-date 2026-01-07
 ```
 
-### Download from a different agency
-
-1. View available feeds:
-
-   ```bash
-   duckdb -c "SELECT * FROM read_csv_auto('seeds/available_feeds.csv')"
-   ```
-
-2. Download the feed you want:
-
-   ```bash
-   uv run python scripts/download_data.py \
-       --feed-type vehicle_positions \
-       --feed-url "https://www3.septa.org/gtfsrt/septa-pa-us/Vehicle/rtVehiclePosition.pb" \
-       --start-date 2026-01-20 \
-       --end-date 2026-01-24
-   ```
-
 ## Command Reference
 
 | Option | Description |
 |--------|-------------|
+| `--list` | List available agencies from inventory |
 | `--defaults` | Download AC Transit data for all feed types |
-| `--date DATE` | Single date for `--defaults` mode (default: 2026-01-24) |
-| `--feed-type TYPE` | One of: `vehicle_positions`, `trip_updates`, `service_alerts` |
-| `--feed-url URL` | Plain feed URL (will be base64url-encoded) |
-| `--feed-base64 BASE64` | Base64url-encoded feed URL |
-| `--start-date DATE` | Start date (YYYY-MM-DD) |
-| `--end-date DATE` | End date (YYYY-MM-DD) |
+| `--agency AGENCY` | Download all feeds for an agency (e.g., septa, vta) |
+| `--date DATE` | Date for `--defaults`/`--agency` mode (default: 2026-01-24) |
+| `--feed-type TYPE` | One of: `vehicle_positions`, `trip_updates`, `service_alerts` (advanced) |
+| `--feed-url URL` | Plain feed URL (advanced) |
+| `--feed-base64 BASE64` | Base64url-encoded feed URL (advanced) |
+| `--start-date DATE` | Start date for date range (advanced) |
+| `--end-date DATE` | End date for date range (advanced) |
 | `--output-dir DIR` | Output directory (default: `data/`) |
-
-## Available Feeds
-
-The `seeds/available_feeds.csv` file lists known feeds with their base64url encodings:
-
-| Agency | Feed Types Available |
-|--------|---------------------|
-| AC Transit | vehicle_positions, trip_updates, service_alerts |
-| SEPTA | vehicle_positions, trip_updates, service_alerts |
-| 511.org (SC, SF, etc.) | vehicle_positions, trip_updates, service_alerts |
-| Metrolink | vehicle_positions |
-| Big Blue Bus | vehicle_positions, trip_updates |
 
 ## Tips
 
@@ -118,12 +112,7 @@ The `seeds/available_feeds.csv` file lists known feeds with their base64url enco
 
 ### No data found for a date
 
-Not all dates have data available. Try a different date or check what's available:
-
-```bash
-# Check available dates for a feed
-curl -s "http://parquet.gtfsrt.io/vehicle_positions/" | grep "date="
-```
+Not all dates have data available. Try a different date or use `--list` to see available date ranges.
 
 ### Download failed
 

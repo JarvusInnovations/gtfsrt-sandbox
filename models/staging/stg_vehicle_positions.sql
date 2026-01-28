@@ -51,4 +51,4 @@ SELECT
     -- generated ID
     uuid() as _uuid
 
-FROM {{ read_gtfs_parquet('vehicle_positions') }}
+FROM read_parquet('data/vehicle_positions/date=*/base64url=*/data.parquet', hive_partitioning=true)
