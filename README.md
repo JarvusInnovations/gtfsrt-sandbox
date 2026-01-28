@@ -2,6 +2,22 @@
 
 A sandbox environment for exploring transit operational data transformation patterns using DuckDB and dbt. Part of the **Common Transit Operations Data Framework**, this demo shows how raw operational data can be transformed into [TIDES](https://tides-transit.org/)-compliant analytics tables using architectural patterns that scale from a laptop to enterprise cloud infrastructure.
 
+## About the Common Framework
+
+The [TIDES specification](https://tides-transit.org/) defines what transit operational data tables should look like—but not how to build the infrastructure to produce, manage, and analyze them. The **Common Transit Operations Data Framework** bridges this gap by defining a consistent architectural pattern that works at any scale:
+
+![Core Architecture Pattern](docs/images/framework.png)
+
+This same pattern applies whether you're a solo analyst on a laptop or an enterprise team in the cloud. The **maturity ladder** shows how agencies can start simple and scale up while maintaining consistent practices:
+
+![Maturity Ladder](docs/images/maturity-ladder.png)
+
+This sandbox represents **Level 0** of the maturity ladder—everything runs locally using DuckDB and dbt, but follows the same patterns you'd use at Level 3 with enterprise cloud infrastructure.
+
+For more details, see the [TRB 2026 presentation: Introducing the Common Transit Operations Data Framework](https://docs.google.com/presentation/d/1TxG8FTjJGUh6UyTaUaZtvhGsxUwfCVPKEg5TKDXKjSw/edit?usp=sharing).
+
+## About the Data
+
 This sandbox uses publicly available GTFS-RT feeds as source data. In production, you would typically use raw AVL system exports which contain richer data, but GTFS-RT provides an accessible starting point for learning the patterns.
 
 ## Quick Start
@@ -88,7 +104,11 @@ uv run python scripts/download_data.py --list
 ### Download a different agency
 
 ```bash
+# Download all SEPTA systems
 uv run python scripts/download_data.py --agency septa --date 2026-01-20
+
+# Download just SEPTA bus
+uv run python scripts/download_data.py --agency septa/bus --date 2026-01-20
 ```
 
 ### Use a different date
@@ -120,43 +140,7 @@ duckdb sandbox.duckdb -ui
 
 ## Data Schema
 
-### vehicle_positions
-
-| Column | Type | Description |
-|--------|------|-------------|
-| partition_date | date | Date partition |
-| feed_base64 | string | Base64url-encoded feed URL |
-| feed_timestamp | timestamp | When the feed was fetched |
-| vehicle_id | string | Vehicle identifier |
-| trip_id | string | Trip identifier |
-| route_id | string | Route identifier |
-| latitude | float | Vehicle latitude |
-| longitude | float | Vehicle longitude |
-| speed | float | Speed in m/s |
-
-### trip_updates
-
-| Column | Type | Description |
-|--------|------|-------------|
-| partition_date | date | Date partition |
-| feed_base64 | string | Base64url-encoded feed URL |
-| feed_timestamp | timestamp | When the feed was fetched |
-| trip_id | string | Trip identifier |
-| stop_id | string | Stop identifier |
-| arrival_delay | int | Delay in seconds |
-| departure_delay | int | Delay in seconds |
-
-### service_alerts
-
-| Column | Type | Description |
-|--------|------|-------------|
-| partition_date | date | Date partition |
-| feed_base64 | string | Base64url-encoded feed URL |
-| feed_timestamp | timestamp | When the feed was fetched |
-| header_text | string | Alert title |
-| description_text | string | Alert details |
-| cause | int | Cause code |
-| effect | int | Effect code |
+For detailed schema documentation, see the [dbt docs](https://jarvusinnovations.github.io/gtfsrt-sandbox/).
 
 ## Need Help?
 
