@@ -49,7 +49,7 @@ This shows all agencies with their feed counts and available date ranges.
 Download all feeds for a specific agency:
 
 ```bash
-# Download SEPTA data
+# Download SEPTA data (all systems)
 uv run python scripts/download_data.py --agency septa --date 2026-01-20
 
 # Download AC Transit (same as --defaults)
@@ -57,6 +57,34 @@ uv run python scripts/download_data.py --agency actransit
 ```
 
 The script shows estimated download sizes before downloading.
+
+## Multi-System Agencies
+
+Some agencies like SEPTA have multiple transit systems (bus, rail) with separate feeds.
+
+### View system breakdown
+
+```bash
+uv run python scripts/download_data.py --list
+```
+
+Output shows systems for multi-system agencies:
+
+```
+  septa                  SEPTA                            6      2026-01-01 to 2026-01-25
+    └─ septa/bus         Bus                              3      2026-01-01 to 2026-01-25
+    └─ septa/rail        Regional Rail                    3      2026-01-01 to 2026-01-25
+```
+
+### Download a specific system
+
+```bash
+# Just SEPTA bus data
+uv run python scripts/download_data.py --agency septa/bus --date 2026-01-20
+
+# Just SEPTA rail data
+uv run python scripts/download_data.py --agency septa/rail --date 2026-01-20
+```
 
 ## Usage Examples
 
@@ -92,7 +120,7 @@ uv run python scripts/download_data.py \
 |--------|-------------|
 | `--list` | List available agencies from inventory |
 | `--defaults` | Download AC Transit data for all feed types |
-| `--agency AGENCY` | Download all feeds for an agency (e.g., septa, vta) |
+| `--agency AGENCY` | Download feeds for an agency (e.g., `septa`) or agency/system (e.g., `septa/bus`) |
 | `--date DATE` | Date for `--defaults`/`--agency` mode (default: 2026-01-24) |
 | `--feed-type TYPE` | One of: `vehicle_positions`, `trip_updates`, `service_alerts` (advanced) |
 | `--feed-url URL` | Plain feed URL (advanced) |

@@ -17,6 +17,8 @@ SELECT
     base64url AS feed_base64,
     agency_id,
     agency_name,
+    system_id,
+    system_name,
     feed_type,
     date_min,
     date_max,

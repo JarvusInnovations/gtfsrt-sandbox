@@ -12,8 +12,9 @@ Usage:
     # Download default sample data (AC Transit, all feed types)
     uv run python scripts/download_data.py --defaults
 
-    # Download all feeds for a specific agency
+    # Download all feeds for a specific agency (or agency/system)
     uv run python scripts/download_data.py --agency septa --date 2026-01-20
+    uv run python scripts/download_data.py --agency septa/bus --date 2026-01-20
 
     # Download a specific feed type and date range (advanced)
     uv run python scripts/download_data.py \
@@ -57,39 +58,79 @@ def fetch_inventory() -> list[dict]:
 
 
 def get_agencies(inventory: list[dict]) -> dict:
-    """Group inventory by agency_id."""
+    """Group inventory by agency_id and system_id."""
     agencies = {}
     for feed in inventory:
         aid = feed["agency_id"]
+        sid = feed.get("system_id")  # None for single-system agencies
+
         if aid not in agencies:
             agencies[aid] = {
                 "name": feed["agency_name"],
+                "systems": {},
+                "date_min": feed["date_min"],
+                "date_max": feed["date_max"],
+            }
+
+        if sid not in agencies[aid]["systems"]:
+            agencies[aid]["systems"][sid] = {
+                "name": feed.get("system_name"),
                 "feeds": {},
                 "date_min": feed["date_min"],
                 "date_max": feed["date_max"],
             }
-        # Track feeds and update date range
-        agencies[aid]["feeds"][feed["feed_type"]] = feed
+
+        system = agencies[aid]["systems"][sid]
+        system["feeds"][feed["feed_type"]] = feed
+        system["date_min"] = min(system["date_min"], feed["date_min"])
+        system["date_max"] = max(system["date_max"], feed["date_max"])
+
+        # Update agency-level date range
         agencies[aid]["date_min"] = min(agencies[aid]["date_min"], feed["date_min"])
         agencies[aid]["date_max"] = max(agencies[aid]["date_max"], feed["date_max"])
+
     return agencies
 
 
+def parse_agency_arg(value: str) -> tuple[str, str | None]:
+    """Parse agency argument, e.g. 'septa' or 'septa/bus'."""
+    if "/" in value:
+        agency_id, system_id = value.split("/", 1)
+        return agency_id, system_id
+    return value, None
+
+
 def list_agencies(inventory: list[dict]) -> None:
-    """Display available agencies."""
+    """Display available agencies with system breakdown."""
     agencies = get_agencies(inventory)
 
     print("\nAvailable agencies:\n")
-    print(f"  {'Agency ID':<22} {'Agency Name':<32} {'Feeds':<6} {'Date Range'}")
+    print(f"  {'Agency ID':<22} {'Name':<32} {'Feeds':<6} {'Date Range'}")
     print(f"  {'-' * 22} {'-' * 32} {'-' * 6} {'-' * 24}")
 
     for aid in sorted(agencies.keys()):
         info = agencies[aid]
-        feed_count = len(info["feeds"])
-        print(f"  {aid:<22} {info['name']:<32} {feed_count:<6} {info['date_min']} to {info['date_max']}")
+        systems = info["systems"]
+
+        # Calculate total feeds across all systems
+        total_feeds = sum(len(s["feeds"]) for s in systems.values())
+        print(f"  {aid:<22} {info['name']:<32} {total_feeds:<6} {info['date_min']} to {info['date_max']}")
+
+        # Show system breakdown for multi-system agencies
+        has_named_systems = any(sid is not None for sid in systems.keys())
+        if has_named_systems:
+            for sid in sorted(systems.keys(), key=lambda x: (x is None, x or "")):
+                if sid is None:
+                    continue
+                sys_info = systems[sid]
+                sys_name = sys_info["name"] or sid
+                feed_count = len(sys_info["feeds"])
+                sys_key = f"{aid}/{sid}"
+                print(f"    └─ {sys_key:<20} {sys_name:<32} {feed_count:<6} {sys_info['date_min']} to {sys_info['date_max']}")
 
     print(f"\nUse --agency <id> to download all feeds for an agency.")
-    print(f"Example: uv run python scripts/download_data.py --agency septa --date 2026-01-20")
+    print(f"Use --agency <id>/<system> to download a specific system.")
+    print(f"Example: uv run python scripts/download_data.py --agency septa/bus --date 2026-01-20")
 
 
 def format_size(bytes_size: int) -> str:
@@ -157,11 +198,17 @@ def download_feed_data(
     return downloaded, skipped
 
 
-def download_agency(agency_id: str, date: str, output_dir: Path, inventory: list[dict]) -> dict[str, tuple[int, int]]:
-    """Download all feeds for an agency.
+def download_agency(
+    agency_id: str,
+    date: str,
+    output_dir: Path,
+    inventory: list[dict],
+    system_id: str | None = None,
+) -> dict[str, tuple[int, int]]:
+    """Download feeds for an agency, optionally filtered by system.
 
     Returns:
-        Dict mapping feed_type to (downloaded, skipped) counts
+        Dict mapping feed key to (downloaded, skipped) counts
     """
     agencies = get_agencies(inventory)
 
@@ -172,29 +219,57 @@ def download_agency(agency_id: str, date: str, output_dir: Path, inventory: list
         return {}
 
     agency = agencies[agency_id]
-    feeds = agency["feeds"]
+    systems = agency["systems"]
+
+    # Filter to specific system if requested
+    if system_id is not None:
+        if system_id not in systems:
+            available_systems = [s for s in systems.keys() if s is not None]
+            if available_systems:
+                print(f"Error: Unknown system '{system_id}' for agency '{agency_id}'")
+                print(f"Available systems: {', '.join(sorted(available_systems))}")
+            else:
+                print(f"Error: Agency '{agency_id}' has no named systems")
+            return {}
+        systems_to_download = {system_id: systems[system_id]}
+    else:
+        systems_to_download = systems
 
     # Validate date is in range
     if date < agency["date_min"] or date > agency["date_max"]:
         print(f"Warning: Date {date} is outside available range ({agency['date_min']} to {agency['date_max']})")
 
-    # Estimate sizes
+    # Collect all feeds to download
+    all_feeds = {}
+    for sid, sys_info in systems_to_download.items():
+        for feed_type, feed in sys_info["feeds"].items():
+            # Use compound key to avoid collisions
+            key = f"{sid or 'default'}:{feed_type}"
+            all_feeds[key] = (sid, feed_type, feed)
+
+    # Estimate sizes and display plan
     total_bytes = 0
-    print(f"\nDownloading {agency['name']} data for {date}:")
-    for feed_type in sorted(feeds.keys()):
-        feed = feeds[feed_type]
-        # Estimate per-day size (total_bytes / days in range)
+    system_label = f" ({system_id})" if system_id else ""
+    print(f"\nDownloading {agency['name']}{system_label} data for {date}:")
+
+    for key in sorted(all_feeds.keys()):
+        sid, feed_type, feed = all_feeds[key]
         days_available = (datetime.strptime(feed["date_max"], "%Y-%m-%d") -
                          datetime.strptime(feed["date_min"], "%Y-%m-%d")).days + 1
         estimated_size = feed["total_bytes"] // max(days_available, 1)
         total_bytes += estimated_size
-        print(f"  {feed_type}: ~{format_size(estimated_size)}")
+
+        sys_label = f" [{sid}]" if sid and len(systems_to_download) > 1 else ""
+        print(f"  {feed_type}{sys_label}: ~{format_size(estimated_size)}")
+
     print(f"  Total: ~{format_size(total_bytes)}")
 
+    # Download feeds
     results = {}
-    for feed_type in sorted(feeds.keys()):
-        feed = feeds[feed_type]
-        print(f"\n{feed_type}:")
+    for key in sorted(all_feeds.keys()):
+        sid, feed_type, feed = all_feeds[key]
+        sys_label = f" [{sid}]" if sid and len(systems_to_download) > 1 else ""
+        print(f"\n{feed_type}{sys_label}:")
         downloaded, skipped = download_feed_data(
             feed_type=feed_type,
             feed_base64=feed["base64url"],
@@ -202,7 +277,7 @@ def download_agency(agency_id: str, date: str, output_dir: Path, inventory: list
             end_date=date,
             output_dir=output_dir,
         )
-        results[feed_type] = (downloaded, skipped)
+        results[key] = (downloaded, skipped)
 
     return results
 
@@ -213,9 +288,16 @@ def print_summary(results: dict[str, tuple[int, int]], output_dir: Path) -> None
     print("Summary:")
     total_downloaded = 0
     total_skipped = 0
-    for feed_type, (downloaded, skipped) in results.items():
+    for key, (downloaded, skipped) in sorted(results.items()):
+        # Parse compound key if present (e.g., "bus:vehicle_positions")
+        if ":" in key:
+            sys_id, feed_type = key.split(":", 1)
+            display_name = f"{feed_type} [{sys_id}]" if sys_id != "default" else feed_type
+        else:
+            display_name = key
+
         status = "✓" if downloaded > 0 or skipped > 0 else "✗"
-        print(f"  {status} {feed_type}: {downloaded} downloaded, {skipped} skipped")
+        print(f"  {status} {display_name}: {downloaded} downloaded, {skipped} skipped")
         total_downloaded += downloaded
         total_skipped += skipped
 
@@ -240,8 +322,9 @@ Examples:
   # Download sample data (AC Transit, all feed types)
   %(prog)s --defaults
 
-  # Download all feeds for a specific agency
+  # Download all feeds for a specific agency (or agency/system)
   %(prog)s --agency septa --date 2026-01-20
+  %(prog)s --agency septa/bus --date 2026-01-20
 
   # Download a specific feed (advanced)
   %(prog)s --feed-type vehicle_positions \\
@@ -267,7 +350,7 @@ See docs/downloading_data.md for more examples.
     )
     parser.add_argument(
         "--agency",
-        help="Download all feeds for an agency (e.g., actransit, septa, vta)",
+        help="Download feeds for an agency (e.g., septa) or agency/system (e.g., septa/bus)",
     )
     parser.add_argument(
         "--date",
@@ -356,7 +439,8 @@ See docs/downloading_data.md for more examples.
         if not inventory:
             print("Error: Could not fetch inventory. Check your internet connection.")
             return
-        results = download_agency(args.agency, args.date, args.output_dir, inventory)
+        agency_id, system_id = parse_agency_arg(args.agency)
+        results = download_agency(agency_id, args.date, args.output_dir, inventory, system_id)
         if results:
             print_summary(results, args.output_dir)
         return
