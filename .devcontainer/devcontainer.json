@@ -11,7 +11,7 @@
     "ghcr.io/eitsupi/devcontainer-features/duckdb-cli:1": {}
   },
 
-  "postCreateCommand": "uv sync && uv run dbt deps && uv run python scripts/download_data.py --defaults && duckdb -c 'INSTALL ui FROM core_nightly;'",
+  "updateContentCommand": "uv sync && uv run dbt deps && uv run python scripts/download_data.py --defaults && duckdb -c 'INSTALL ui FROM core_nightly;'",
 
   "customizations": {
     "vscode": {
