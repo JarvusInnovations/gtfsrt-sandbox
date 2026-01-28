@@ -2,20 +2,6 @@
 
 A sandbox environment for exploring transit operational data transformation patterns using DuckDB and dbt. Part of the **Common Transit Operations Data Framework**, this demo shows how raw operational data can be transformed into [TIDES](https://tides-transit.org/)-compliant analytics tables using architectural patterns that scale from a laptop to enterprise cloud infrastructure.
 
-## About the Common Framework
-
-The [TIDES specification](https://tides-transit.org/) defines what transit operational data tables should look like—but not how to build the infrastructure to produce, manage, and analyze them. The **Common Transit Operations Data Framework** bridges this gap by defining a consistent architectural pattern that works at any scale:
-
-![Core Architecture Pattern](docs/images/framework.png)
-
-This same pattern applies whether you're a solo analyst on a laptop or an enterprise team in the cloud. The **maturity ladder** shows how agencies can start simple and scale up while maintaining consistent practices:
-
-![Maturity Ladder](docs/images/maturity-ladder.png)
-
-This sandbox represents **Level 0** of the maturity ladder—everything runs locally using DuckDB and dbt, but follows the same patterns you'd use at Level 3 with enterprise cloud infrastructure.
-
-For more details, see the [TRB 2026 presentation: Introducing the Common Transit Operations Data Framework](https://docs.google.com/presentation/d/1TxG8FTjJGUh6UyTaUaZtvhGsxUwfCVPKEg5TKDXKjSw/edit?usp=sharing).
-
 ## About the Data
 
 This sandbox uses publicly available GTFS-RT feeds as source data. In production, you would typically use raw AVL system exports which contain richer data, but GTFS-RT provides an accessible starting point for learning the patterns.
@@ -64,6 +50,20 @@ duckdb sandbox.duckdb -ui
 ```
 
 > **Note:** If you get a "Failed to download extension" error with `-ui`, see [DuckDB UI Extension Error](docs/troubleshooting.md#duckdb-ui-extension-error).
+
+## About the Common Framework
+
+The [TIDES specification](https://tides-transit.org/) defines what transit operational data tables should look like—but not how to build the infrastructure to produce, manage, and analyze them. The **Common Transit Operations Data Framework** bridges this gap by defining a consistent architectural pattern that works at any scale:
+
+![Core Architecture Pattern](docs/images/framework.png)
+
+This same pattern applies whether you're a solo analyst on a laptop or an enterprise team in the cloud. The **maturity ladder** shows how agencies can start simple and scale up while maintaining consistent practices:
+
+![Maturity Ladder](docs/images/maturity-ladder.png)
+
+This sandbox represents **Level 0** of the maturity ladder—everything runs locally using DuckDB and dbt, but follows the same patterns you'd use at Level 3 with enterprise cloud infrastructure.
+
+For more details, see the [TRB 2026 presentation: Introducing the Common Transit Operations Data Framework](https://docs.google.com/presentation/d/1TxG8FTjJGUh6UyTaUaZtvhGsxUwfCVPKEg5TKDXKjSw/edit?usp=sharing).
 
 ## How It Works
 
