@@ -1,14 +1,18 @@
 /*
     Staging model for GTFS-RT vehicle positions.
-    Downloads data from GCS on first run and caches locally.
+    Reads pre-downloaded parquet data from the local data/ directory.
 
     One row per vehicle position update in the feed.
-    Uses gs:// glob patterns with Hive partitioning for efficient access.
+
+    Before running: uv run python scripts/download_data.py --defaults
 */
 
 SELECT
     -- Partition key (from Hive partitioning)
     date AS partition_date,
+
+    -- Feed identifier (from Hive partitioning)
+    base64url AS feed_base64,
 
     -- Source metadata
     feed_url,
@@ -45,7 +49,6 @@ SELECT
     occupancy_percentage,
 
     -- generated ID
-    _uuid
+    uuid() as _uuid
 
-FROM {{ ref('base_vehicle_positions') }}
-
+FROM {{ read_gtfs_parquet('vehicle_positions') }}

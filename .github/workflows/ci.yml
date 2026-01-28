@@ -51,6 +51,9 @@ jobs:
       - name: Install dbt dependencies
         run: uv run dbt deps
 
+      - name: Download sample data
+        run: uv run python scripts/download_data.py --defaults
+
       - name: Load seed data
         run: uv run dbt seed
 

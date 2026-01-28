@@ -1,14 +1,18 @@
 /*
     Staging model for GTFS-RT trip updates.
-    Downloads data from GCS on first run and caches locally.
+    Reads pre-downloaded parquet data from the local data/ directory.
 
     Denormalized: one row per stop_time_update within each trip update.
-    Uses gs:// glob patterns with Hive partitioning for efficient access.
+
+    Before running: uv run python scripts/download_data.py --defaults
 */
 
 SELECT
     -- Partition key (from Hive partitioning)
     date AS partition_date,
+
+    -- Feed identifier (from Hive partitioning)
+    base64url AS feed_base64,
 
     -- Source metadata
     feed_url,
@@ -43,6 +47,6 @@ SELECT
     stop_schedule_relationship,
 
     -- generated ID
-    _uuid
+    uuid() as _uuid
 
-FROM {{ ref('base_trip_updates') }}
+FROM {{ read_gtfs_parquet('trip_updates') }}

@@ -4,9 +4,15 @@ models:
   - name: stg_vehicle_positions
     description: >
       Staging model for GTFS-RT vehicle positions. Each row represents a
-      vehicle position update from the feed. Data is downloaded from GCS
-      on first run and cached locally as a DuckDB table.
+      vehicle position update from the feed. Reads pre-downloaded parquet
+      data from the local data/ directory.
+
+      Before running: uv run python scripts/download_data.py --defaults
     columns:
+      - name: partition_date
+        description: Date partition from the data source
+      - name: feed_base64
+        description: Base64url-encoded feed URL (from Hive partitioning)
       - name: feed_url
         description: Original feed URL
       - name: feed_timestamp
@@ -32,9 +38,15 @@ models:
   - name: stg_trip_updates
     description: >
       Staging model for GTFS-RT trip updates. Denormalized with one row
-      per stop_time_update within each trip update entity. Data is
-      downloaded from GCS on first run and cached locally.
+      per stop_time_update within each trip update entity. Reads pre-downloaded
+      parquet data from the local data/ directory.
+
+      Before running: uv run python scripts/download_data.py --defaults
     columns:
+      - name: partition_date
+        description: Date partition from the data source
+      - name: feed_base64
+        description: Base64url-encoded feed URL (from Hive partitioning)
       - name: feed_url
         description: Original feed URL
       - name: feed_timestamp
@@ -54,9 +66,15 @@ models:
   - name: stg_service_alerts
     description: >
       Staging model for GTFS-RT service alerts. Denormalized with one row
-      per informed_entity within each alert. Data is downloaded from GCS
-      on first run and cached locally.
+      per informed_entity within each alert. Reads pre-downloaded parquet
+      data from the local data/ directory.
+
+      Before running: uv run python scripts/download_data.py --defaults
     columns:
+      - name: partition_date
+        description: Date partition from the data source
+      - name: feed_base64
+        description: Base64url-encoded feed URL (from Hive partitioning)
       - name: feed_url
         description: Original feed URL
       - name: feed_timestamp

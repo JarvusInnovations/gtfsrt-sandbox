@@ -1,14 +1,18 @@
 /*
     Staging model for GTFS-RT service alerts.
-    Downloads data from GCS on first run and caches locally.
+    Reads pre-downloaded parquet data from the local data/ directory.
 
     Denormalized: one row per informed_entity within each alert.
-    Uses gs:// glob patterns with Hive partitioning for efficient access.
+
+    Before running: uv run python scripts/download_data.py --defaults
 */
 
 SELECT
     -- Partition key (from Hive partitioning)
     date AS partition_date,
+
+    -- Feed identifier (from Hive partitioning)
+    base64url AS feed_base64,
 
     -- Source metadata
     feed_url,
@@ -39,5 +43,6 @@ SELECT
     trip_direction_id,
 
     -- generated ID
-    _uuid
-FROM {{ ref('base_service_alerts') }}
+    uuid() as _uuid
+
+FROM {{ read_gtfs_parquet('service_alerts') }}
