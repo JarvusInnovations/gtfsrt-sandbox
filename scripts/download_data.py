@@ -16,6 +16,9 @@ Usage:
     uv run python scripts/download_data.py --agency septa --date 2026-01-20
     uv run python scripts/download_data.py --agency septa/bus --date 2026-01-20
 
+    # Download all available dates for an agency
+    uv run python scripts/download_data.py --agency actransit --all-dates
+
     # Download a specific feed type and date range (advanced)
     uv run python scripts/download_data.py \
         --feed-type vehicle_positions \
@@ -200,7 +203,8 @@ def download_feed_data(
 
 def download_agency(
     agency_id: str,
-    date: str,
+    start_date: str,
+    end_date: str,
     output_dir: Path,
     inventory: list[dict],
     system_id: str | None = None,
@@ -235,9 +239,9 @@ def download_agency(
     else:
         systems_to_download = systems
 
-    # Validate date is in range
-    if date < agency["date_min"] or date > agency["date_max"]:
-        print(f"Warning: Date {date} is outside available range ({agency['date_min']} to {agency['date_max']})")
+    # Validate dates are in range
+    if start_date < agency["date_min"] or end_date > agency["date_max"]:
+        print(f"Warning: Date range {start_date} to {end_date} extends outside available range ({agency['date_min']} to {agency['date_max']})")
 
     # Collect all feeds to download
     all_feeds = {}
@@ -247,16 +251,22 @@ def download_agency(
             key = f"{sid or 'default'}:{feed_type}"
             all_feeds[key] = (sid, feed_type, feed)
 
+    # Calculate number of days to download
+    num_days = (datetime.strptime(end_date, "%Y-%m-%d") -
+                datetime.strptime(start_date, "%Y-%m-%d")).days + 1
+
     # Estimate sizes and display plan
     total_bytes = 0
     system_label = f" ({system_id})" if system_id else ""
-    print(f"\nDownloading {agency['name']}{system_label} data for {date}:")
+    date_label = start_date if start_date == end_date else f"{start_date} to {end_date} ({num_days} days)"
+    print(f"\nDownloading {agency['name']}{system_label} data for {date_label}:")
 
     for key in sorted(all_feeds.keys()):
         sid, feed_type, feed = all_feeds[key]
         days_available = (datetime.strptime(feed["date_max"], "%Y-%m-%d") -
                          datetime.strptime(feed["date_min"], "%Y-%m-%d")).days + 1
-        estimated_size = feed["total_bytes"] // max(days_available, 1)
+        avg_bytes_per_day = feed["total_bytes"] // max(days_available, 1)
+        estimated_size = avg_bytes_per_day * num_days
         total_bytes += estimated_size
 
         sys_label = f" [{sid}]" if sid and len(systems_to_download) > 1 else ""
@@ -273,8 +283,8 @@ def download_agency(
         downloaded, skipped = download_feed_data(
             feed_type=feed_type,
             feed_base64=feed["base64url"],
-            start_date=date,
-            end_date=date,
+            start_date=start_date,
+            end_date=end_date,
             output_dir=output_dir,
         )
         results[key] = (downloaded, skipped)
@@ -326,6 +336,9 @@ Examples:
   %(prog)s --agency septa --date 2026-01-20
   %(prog)s --agency septa/bus --date 2026-01-20
 
+  # Download all available dates for an agency
+  %(prog)s --agency actransit --all-dates
+
   # Download a specific feed (advanced)
   %(prog)s --feed-type vehicle_positions \\
            --feed-url "https://api.actransit.org/transit/gtfsrt/vehicles" \\
@@ -352,10 +365,18 @@ See docs/downloading_data.md for more examples.
         "--agency",
         help="Download feeds for an agency (e.g., septa) or agency/system (e.g., septa/bus)",
     )
-    parser.add_argument(
+
+    # Date options (mutually exclusive)
+    date_group = parser.add_mutually_exclusive_group()
+    date_group.add_argument(
         "--date",
         default=DEFAULT_DATE,
         help=f"Date for --defaults/--agency mode (default: {DEFAULT_DATE})",
+    )
+    date_group.add_argument(
+        "--all-dates",
+        action="store_true",
+        help="Download all available dates for the agency (uses inventory date range)",
     )
 
     # Advanced: specific feed mode
@@ -389,6 +410,10 @@ See docs/downloading_data.md for more examples.
     )
 
     args = parser.parse_args()
+
+    # Validate --all-dates usage
+    if args.all_dates and not args.agency:
+        parser.error("--all-dates requires --agency")
 
     # Handle --list mode
     if args.list:
@@ -428,7 +453,7 @@ See docs/downloading_data.md for more examples.
             print_summary(results, args.output_dir)
             return
 
-        results = download_agency(DEFAULT_AGENCY, args.date, args.output_dir, inventory)
+        results = download_agency(DEFAULT_AGENCY, args.date, args.date, args.output_dir, inventory)
         if results:
             print_summary(results, args.output_dir)
         return
@@ -439,8 +464,40 @@ See docs/downloading_data.md for more examples.
         if not inventory:
             print("Error: Could not fetch inventory. Check your internet connection.")
             return
+
         agency_id, system_id = parse_agency_arg(args.agency)
-        results = download_agency(agency_id, args.date, args.output_dir, inventory, system_id)
+        agencies = get_agencies(inventory)
+
+        if agency_id not in agencies:
+            available = ", ".join(sorted(agencies.keys()))
+            print(f"Error: Unknown agency '{agency_id}'")
+            print(f"Available agencies: {available}")
+            return
+
+        # Validate system_id if specified (fail early before date calculation)
+        if system_id and system_id not in agencies[agency_id]["systems"]:
+            available_systems = [s for s in agencies[agency_id]["systems"].keys() if s is not None]
+            if available_systems:
+                print(f"Error: Unknown system '{system_id}' for agency '{agency_id}'")
+                print(f"Available systems: {', '.join(sorted(available_systems))}")
+            else:
+                print(f"Error: Agency '{agency_id}' has no named systems")
+            return
+
+        # Determine date range
+        if args.all_dates:
+            # Use date range from inventory
+            if system_id:
+                date_info = agencies[agency_id]["systems"][system_id]
+            else:
+                date_info = agencies[agency_id]
+            start_date = date_info["date_min"]
+            end_date = date_info["date_max"]
+        else:
+            start_date = args.date
+            end_date = args.date
+
+        results = download_agency(agency_id, start_date, end_date, args.output_dir, inventory, system_id)
         if results:
             print_summary(results, args.output_dir)
         return
