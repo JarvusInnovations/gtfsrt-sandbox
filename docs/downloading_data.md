@@ -86,6 +86,20 @@ uv run python scripts/download_data.py --agency septa/bus --date 2026-01-20
 uv run python scripts/download_data.py --agency septa/rail --date 2026-01-20
 ```
 
+## Download All Available Dates
+
+Download the entire date range available for an agency:
+
+```bash
+# Download all dates for AC Transit
+uv run python scripts/download_data.py --agency actransit --all-dates
+
+# Download all dates for a specific system
+uv run python scripts/download_data.py --agency septa/bus --all-dates
+```
+
+**Note:** This downloads all available data which may be large. Use `--list` first to see date ranges and estimate sizes.
+
 ## Usage Examples
 
 ### Download defaults for a specific date
@@ -122,6 +136,7 @@ uv run python scripts/download_data.py \
 | `--defaults` | Download AC Transit data for all feed types |
 | `--agency AGENCY` | Download feeds for an agency (e.g., `septa`) or agency/system (e.g., `septa/bus`) |
 | `--date DATE` | Date for `--defaults`/`--agency` mode (default: 2026-01-24) |
+| `--all-dates` | Download all available dates for the agency (uses inventory date range) |
 | `--feed-type TYPE` | One of: `vehicle_positions`, `trip_updates`, `service_alerts` (advanced) |
 | `--feed-url URL` | Plain feed URL (advanced) |
 | `--feed-base64 BASE64` | Base64url-encoded feed URL (advanced) |
